@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brawl Stars Guessing Game</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background-image: url('https://preview.redd.it/iapqmzd3zu721.jpg?width=640&crop=smart&auto=webp&s=f718f1c7b7f2bea6f66267e29b20709c4e23852e');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+    }
+
+    .menu {
+      margin-top: 50px;
+    }
+
+    h1 {
+      font-size: 3em;
+      text-shadow: 2px 2px 4px black;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background-color: #ffcc00;
+      transform: scale(1.1);
+    }
+
+    footer {
+      margin-top: 50px;
+      text-shadow: 1px 1px 2px black;
+    }
+  </style>
+</head>
+<body>
+  <div class="menu">
+    <h1>BrawlStarsdle</h1>
+    <button onclick="startGame('wordle')">Wordle</button>
+    <button onclick="startGame('attributes')">Özellik</button>
+    <button onclick="startGame('sound')">Ses</button>
+    <button onclick="startGame('quote')">Söz</button>
+    <button onclick="startGame('skill')">Yetenek</button>
+  </div>
+
+  <div id="game-container"></div>
+
+  <footer>
+    <p>Recep Berk Akten tarafından yapıldı.</p>
+  </footer>
+
+  <script>
+    function startGame(mode) {
+      if (mode === 'attributes') {
+        window.location.href = 'ÖZELLİK.html'; // Existing game
+      } else if (mode === 'wordle') {
+        window.location.href = 'wordle.html'; // Wordle game
+      } else if (mode === 'sound') {
+        window.location.href = 'sound.html'; // Sound guessing
+      } else if (mode === 'quote') {
+        window.location.href = 'quote.html'; // Quote guessing
+      } else if (mode === 'skill') {
+        window.location.href = 'skill.html'; // Skill guessing
+      }
+    }
+  </script>
+</body>
+</html>

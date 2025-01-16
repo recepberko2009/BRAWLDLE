@@ -1,0 +1,206 @@
+<!DOCTYPE html> 
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brawl Stars Wordle</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: url('https://preview.redd.it/iapqmzd3zu721.jpg?width=640&crop=smart&auto=webp&s=f718f1c7b7f2bea6f66267e29b20709c4e23852e') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(6, 60px);
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #ccc;
+            font-size: 24px;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 60px;
+            background: #333;
+        }
+
+        #guessInput {
+            padding: 10px;
+            font-size: 20px;
+            border: 2px solid gold;
+            border-radius: 20px;
+            outline: none;
+            box-shadow: 0 0 15px gold;
+        }
+
+        .keyboard button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            background: gold;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 15px gold;
+        }
+
+        .keyboard {
+            margin-top: 20px;
+        }
+
+        .end-message {
+            display: none;
+            padding: 20px;
+            font-size: 24px;
+            border: 2px solid white;
+            margin-top: 20px;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: #222;
+            color: gold;
+            font-size: 18px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Brawl Stars Wordle</h1>
+    <div class="grid" id="grid"></div>
+    <input type="text" id="guessInput" placeholder="Karakter İsmini Girin" maxlength="6" list="charactersList">
+    <datalist id="charactersList"></datalist> <!-- Datalist öğesini ekledim -->
+    <div class="keyboard">
+        <button onclick="submitGuess()">Tahmin Et</button>
+    </div>
+    <div class="end-message" id="endMessage"></div>
+    <div id="restartOptions" class="end-message">
+        <button onclick="startNewGame()">Tekrar Oyna</button>
+        <button onclick="closeGame()">Kapat</button>
+    </div>
+
+    <footer>Recep Berk Akten tarafından yapıldı.</footer>
+
+    <script>
+        const characters = [
+            'Grom', 'Leon', 'Lola', 'Lou', 'Mandy', 'Max', 'Meg', 'Mr P', 'Nita', 'Penny', 'Poco', 'Rico', 'Rosa', 'Sandy',
+            'Sprout', 'Stu', 'Surge', 'Tara', 'Tick', 'Willow', 'Shelly', '8-Bit', 'Amber', 'Angelo', 'Ash', 'Barley', 'Bea',
+            'Belle', 'Berry', 'Bibi', 'Bo', 'Bonnie', 'Brock', 'Bull', 'Buster', 'Buzz', 'Byron', 'Carl', 'Charlie', 'Chester',
+            'Chuck', 'Clancy', 'Colette', 'Colt', 'Cordelius', 'Crow', 'Darryl', 'Doug', 'Draco', 'Dynamike', 'Edgar', 'El Primo',
+            'Emz', 'Eve', 'Fang', 'Frank', 'Gale', 'Gene', 'Gray', 'Griff', 'Gus', 'Hank', 'Jacky', 'Buzz Isıkyılı', 'Janet', 
+            'Jessie', 'Juju', 'Kenji', 'Kit', 'Larry ve Lawrie', 'Lily', 'Maise', 'Meeple', 'Melodie', 'Mico', 'Moe', 'Mortis',
+            'Nani', 'Ollie', 'Otis', 'Pam', 'Pearl', 'Piper', 'R-T', 'Ruffs', 'Sam', 'Shade', 'Spike', 'Squeak'
+        ];
+
+        let correctCharacter;
+        let attemptsLeft = 7;
+        const grid = document.getElementById("grid");
+        const usedGuesses = []; // Daha önce tahmin edilen karakterlerin saklanacağı liste
+
+        function startNewGame() {
+            correctCharacter = characters[Math.floor(Math.random() * characters.length)].toLowerCase();
+            attemptsLeft = 7;
+            grid.innerHTML = "";
+            const length = correctCharacter.length;
+            grid.style.gridTemplateColumns = `repeat(${length}, 60px)`;
+
+            for (let i = 0; i < attemptsLeft; i++) {
+                for (let j = 0; j < length; j++) {
+                    const cell = document.createElement("div");
+                    cell.classList.add("cell");
+                    grid.appendChild(cell);
+                }
+            }
+
+            // End message and restart options hidden
+            document.getElementById("endMessage").style.display = "none";
+            document.getElementById("restartOptions").style.display = "none";
+        }
+
+        startNewGame();
+
+        // Datalist'e karakterleri ekliyoruz
+        const datalist = document.getElementById('charactersList');
+        characters.forEach(char => {
+            let option = document.createElement('option');
+            option.value = char;
+            datalist.appendChild(option);
+        });
+
+        function submitGuess() {
+            const guessInput = document.getElementById("guessInput");
+            const guess = guessInput.value.toLowerCase().trim();
+
+            if (guess.length !== correctCharacter.length) {
+                alert(`Lütfen tam ${correctCharacter.length} harfli bir karakter ismi girin!`);
+                return;
+            }
+            if (!characters.map(c => c.toLowerCase()).includes(guess)) {
+                alert("Bu karakter mevcut değil!");
+                return;
+            }
+
+            if (usedGuesses.includes(guess)) {
+                alert("Bu karakteri zaten tahmin ettiniz!");
+                return; // Aynı karakterin tekrar girilmesini engeller
+            }
+
+            usedGuesses.push(guess); // Tahmin edilen karakteri listeye ekler
+
+            const cells = document.querySelectorAll(".cell");
+            let startIndex = (7 - attemptsLeft) * correctCharacter.length;
+
+            for (let i = 0; i < correctCharacter.length; i++) {
+                cells[startIndex + i].textContent = guess[i];
+                if (guess[i] === correctCharacter[i]) {
+                    cells[startIndex + i].style.background = "green";
+                } else if (correctCharacter.includes(guess[i])) {
+                    cells[startIndex + i].style.background = "orange";
+                } else {
+                    cells[startIndex + i].style.background = "red";
+                }
+            }
+
+            attemptsLeft--;
+
+            if (guess === correctCharacter) {
+                document.getElementById("endMessage").textContent = `Tebrikler! Doğru tahmin: ${correctCharacter}`;
+                document.getElementById("endMessage").style.display = "block";
+                document.getElementById("restartOptions").style.display = "block"; // Oyun bitince seçenekleri göster
+            } else if (attemptsLeft === 0) {
+                document.getElementById("endMessage").textContent = `Bilemediniz! Doğru karakter: ${correctCharacter}`;
+                document.getElementById("endMessage").style.display = "block";
+                document.getElementById("restartOptions").style.display = "block"; // Oyun bitince seçenekleri göster
+            }
+        }
+
+        // Yeniden oyun başlatma fonksiyonu
+        function restartGame() {
+            startNewGame();
+            usedGuesses.length = 0; // Tahmin edilen karakterleri sıfırla
+        }
+
+        // Oyun kapatma fonksiyonu
+        function closeGame() {
+            window.close();
+        }
+
+        // Tekrar oyna butonuna tıklandığında oyun başlat
+        document.querySelector('#restartOptions button:first-child').onclick = restartGame;
+        // Kapat butonuna tıklandığında pencereyi kapat
+        document.querySelector('#restartOptions button:last-child').onclick = closeGame;
+    </script>
+</body>
+</html>
