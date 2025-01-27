@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://recepberko2009.github.io/BRAWLDLE/sitemap.xml
