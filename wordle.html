@@ -75,6 +75,38 @@
             font-size: 18px;
             text-align: center;
         }
+
+        /* Öneri kutusu stil */
+        .suggestion-box {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            width: 200px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none; /* Başlangıçta gizli olacak */
+            padding: 10px;
+        }
+
+        .suggestion-box ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .suggestion-box li {
+            padding: 5px;
+            font-size: 18px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .suggestion-box li:hover {
+            background-color: gold;
+        }
     </style>
 </head>
 <body>
@@ -89,6 +121,11 @@
     <div id="restartOptions" class="end-message">
         <button onclick="startNewGame()">Tekrar Oyna</button>
         <button onclick="closeGame()">Kapat</button>
+    </div>
+
+    <!-- Öneri Kutusu -->
+    <div class="suggestion-box" id="suggestionBox">
+        <ul id="suggestionList"></ul>
     </div>
 
     <footer>Recep Berk Akten tarafından yapıldı.</footer>
@@ -201,6 +238,37 @@
         document.querySelector('#restartOptions button:first-child').onclick = restartGame;
         // Kapat butonuna tıklandığında pencereyi kapat
         document.querySelector('#restartOptions button:last-child').onclick = closeGame;
+
+        // Öneri kutusu fonksiyonu
+        const suggestionBox = document.getElementById("suggestionBox");
+        const suggestionList = document.getElementById("suggestionList");
+
+        document.getElementById("guessInput").addEventListener("input", function() {
+            const query = this.value.toLowerCase().trim();
+            suggestionList.innerHTML = ""; // Önceki önerileri temizle
+
+            if (query.length > 0) {
+                const suggestions = characters.filter(char => char.toLowerCase().startsWith(query) && !usedGuesses.includes(char.toLowerCase()));
+                
+                suggestions.forEach(function(suggestion) {
+                    const li = document.createElement("li");
+                    li.textContent = suggestion;
+                    li.onclick = function() {
+                        document.getElementById("guessInput").value = suggestion;
+                        suggestionBox.style.display = "none"; // Öneri kutusunu gizle
+                    };
+                    suggestionList.appendChild(li);
+                });
+
+                if (suggestions.length > 0) {
+                    suggestionBox.style.display = "block"; // Öneri kutusunu göster
+                } else {
+                    suggestionBox.style.display = "none"; // Öneri kutusunu gizle
+                }
+            } else {
+                suggestionBox.style.display = "none"; // Eğer kutu boşsa gizle
+            }
+        });
     </script>
 </body>
 </html>
