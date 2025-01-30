@@ -444,29 +444,16 @@ imgElement.classList.add("character-image");
 
 
         // Karakter arama ve listeleme fonksiyonu
+        <script defer>
+    window.onload = function() {
+        let selectedCharacters = [];
+        
         function filterCharacters() {
-    const searchText = document.getElementById("guessInput").value.toLowerCase();
-    const filtered = brawlers.filter(b => b.name.toLowerCase().includes(searchText) && !selectedCharacters.includes(b.name));
-
-    const characterList = document.getElementById("characterList");
-    characterList.innerHTML = '';  // Listeyi temizle
-
-    filtered.forEach(brawler => {
-        const item = document.createElement("div");
-        item.classList.add("character-item");
-        item.innerText = brawler.name;
-        item.onclick = () => selectCharacter(brawler.name);
-        characterList.appendChild(item);
-    });
-}
-
-// Listeyi gösterme
-function filterCharacters() {
             const searchText = document.getElementById("guessInput").value.toLowerCase();
-            const filtered = brawlers.filter(b => b.name.toLowerCase().includes(searchText));
+            const filtered = brawlers.filter(b => b.name.toLowerCase().includes(searchText) && !selectedCharacters.includes(b.name));
 
             const characterList = document.getElementById("characterList");
-            characterList.innerHTML = '';
+            characterList.innerHTML = '';  
 
             filtered.forEach(brawler => {
                 const item = document.createElement("div");
@@ -486,13 +473,37 @@ function filterCharacters() {
             document.getElementById("characterList").style.display = "none";
         }
 
-        function restartGame() {
-            window.location.reload();
-        } 
+        function makeGuess() {
+            const input = document.getElementById("guessInput").value;
+            document.getElementById("guessInput").value = ""; 
+            if (selectedCharacters.includes(input)) {
+                alert("Bu karakteri zaten tahmin ettiniz!");
+                return;
+            }
 
-        function closeGame() {
-            window.close();
+            const guess = brawlers.find(b => b.name.toLowerCase() === input.toLowerCase());
+            const table = document.getElementById("guessTable");
+
+            if (!guess) {
+                alert("Karakter ismi yanlış!");
+                return;
+            }
+
+            selectedCharacters.push(guess.name);
+            let totalGuesses = selectedCharacters.length; 
+
+            document.getElementById("guessStatus").innerText = `Tahmin sayısı: ${totalGuesses} | Kalan hak: ${12 - totalGuesses}`;
+
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td><img src="${guess.img}" alt="${guess.name}" class="character-image"></td>
+                <td>${guess.name}</td>
+            `;
+            table.appendChild(row);
         }
-    </script>
-</body>
-</html> 
+
+        document.getElementById("guessInput").oninput = filterCharacters;
+        document.getElementById("guessInput").onclick = showCharacterList;
+        document.querySelector("button").onclick = makeGuess;
+    };
+</script>
