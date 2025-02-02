@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Aksesardan Karakteri Tahmin Et</title>
+  <style>
+    /* Genel Sayfa ve Arka Plan Ayarları */
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('https://preview.redd.it/iapqmzd3zu721.jpg?width=640&crop=smart&auto=webp&s=f718f1c7b7f2bea6f66267e29b20709c4e23852e') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Arial', sans-serif;
+    }
+    /* Oyun Konteyneri */
+    .container {
+      max-width: 600px;
+      margin: 50px auto;
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    h1 {
+      font-size: 2.5em;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    /* Aksesuar Görseli */
+    #accessoryImg {
+      max-width: 200px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+    }
+    /* Giriş Kutusu ve Datalist */
+    input[type="text"] {
+      padding: 10px;
+      width: 80%;
+      font-size: 1em;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+    /* Butonlar */
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 5px;
+      background-color: #ff5722;
+      color: #fff;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #e64a19;
+    }
+    /* Kalan Tahmin Hakkı */
+    #attemptsRemaining {
+      margin-top: 10px;
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #333;
+    }
+    /* Geçmiş Tahminler Alanı */
+    #guessHistory {
+      max-height: 150px;
+      overflow-y: auto;
+      margin-top: 20px;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      text-align: left;
+    }
+    #guessHistory p {
+      margin: 5px;
+      font-size: 1em;
+    }
+    /* Sonuç Mesajı */
+    #resultMessage {
+      font-size: 1.5em;
+      margin-top: 20px;
+      color: #2e7d32;
+    }
+    /* Oyun Sonu Seçenekleri */
+    #endOptions {
+      margin-top: 20px;
+    }
+    .hidden {
+      display: none;
+    }
+    /* Alt Bilgi */
+    .footer {
+      margin-top: 30px;
+      font-weight: bold;
+      font-size: 1em;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Başlık -->
+    <h1>Aksesardan Karakteri Tahmin Et</h1>
+    
+    <!-- Aksesuar Görseli ve İpucu Metni -->
+    <img id="accessoryImg" src="" alt="Aksesuar">
+    <div id="hintText"><em>Bu aksesuar hangi karaktere ait?</em></div>
+    <br>
+    
+    <!-- Tahmin Giriş Alanı -->
+    <input type="text" id="guessInput" list="characterList" placeholder="Karakter adını girin">
+    <datalist id="characterList">
+      <option value="Shelly">
+      <option value="Colt">
+      <option value="Bull">
+      <option value="Brock">
+      <option value="Jessie">
+      <option value="Nita">
+      <option value="Dynamike">
+      <option value="Bo">
+      <option value="Tick">
+      <option value="Emz">
+      <!-- İsteğe bağlı olarak daha fazla karakter ekleyebilirsiniz -->
+    </datalist>
+    <br>
+    
+    <!-- Tahmin Et Butonu -->
+    <button id="guessButton">Tahmin Et</button>
+    
+    <!-- Kalan Tahmin Hakkı Göstergesi -->
+    <div id="attemptsRemaining">Kalan Tahmin Hakkı: 10</div>
+    
+    <!-- Geçmiş Tahminler Alanı -->
+    <div id="guessHistory"></div>
+    
+    <!-- Sonuç Mesajı -->
+    <div id="resultMessage"></div>
+    
+    <!-- Oyun Sonu Seçenekleri: Tekrar Oyna / Kapat -->
+    <div id="endOptions" class="hidden">
+      <button id="restartButton">Tekrar Oyna</button>
+      <button id="closeButton">Kapat</button>
+    </div>
+    
+    <!-- Alt Bilgi -->
+    <div class="footer">Muhteşem ve ihtişamlı şekilde Recep Berk Akten tarafından yapıldı</div>
+  </div>
+  
+  <script>
+    // Brawl Stars karakterleri ve aksesuar görselleri (örnek resimler kullanılmıştır)
+    const accessories = [
+    { character: "Grom", image: "aksesuar/Grom.png" },
+    { character: "Leon", image: "aksesuar/Leon.png" },
+    { character: "Lola", image: "aksesuar/Lola.png" },
+    { character: "Lou", image: "aksesuar/Lou.png" },
+    { character: "Mandy", image: "aksesuar/Mandy.png" },
+    { character: "Max", image: "aksesuar/Max.png" },
+    { character: "Meg", image: "aksesuar/Meg.png" },
+    { character: "Mr P", image: "aksesuar/Mr P.png" },
+    { character: "Nita", image: "aksesuar/Nita.png" },
+    { character: "Penny", image: "aksesuar/Penny.png" },
+    { character: "Poco", image: "aksesuar/Poco.png" },
+    { character: "Rico", image: "aksesuar/Rico.png" },
+    { character: "Rosa", image: "aksesuar/Rosa.png" },
+    { character: "Sandy", image: "aksesuar/Sandy.png" },
+    { character: "Sprout", image: "aksesuar/Sprout.png" },
+    { character: "Stu", image: "aksesuar/Stu.png" },
+    { character: "Surge", image: "aksesuar/Surge.png" },
+    { character: "Tara", image: "aksesuar/Tara.png" },
+    { character: "Tick", image: "aksesuar/Tick.png" },
+    { character: "Willow", image: "aksesuar/Willow.png" },
+    { character: "Shelly", image: "aksesuar/Shelly.png" },
+    { character: "8-Bit", image: "aksesuar/8-Bit.png" },
+    { character: "Amber", image: "aksesuar/Amber.png" },
+    { character: "Angelo", image: "aksesuar/Angelo.png" },
+    { character: "Ash", image: "aksesuar/Ash.png" },
+    { character: "Barley", image: "aksesuar/Barley.png" },
+    { character: "Bea", image: "aksesuar/Bea.png" },
+    { character: "Belle", image: "aksesuar/Belle.png" },
+    { character: "Berry", image: "aksesuar/Berry.png" },
+    { character: "Bibi", image: "aksesuar/Bibi.png" },
+    { character: "Bo", image: "aksesuar/Bo.png" },
+    { character: "Bonnie", image: "aksesuar/Bonnie.png" },
+    { character: "Brock", image: "aksesuar/Brock.png" },
+    { character: "Bull", image: "aksesuar/Bull.png" },
+    { character: "Buster", image: "aksesuar/Buster.png" },
+    { character: "Buzz", image: "aksesuar/Buzz.png" },
+    { character: "Byron", image: "aksesuar/Byron.png" },
+    { character: "Carl", image: "aksesuar/Carl.png" },
+    { character: "Charlie", image: "aksesuar/Charlie.png" },
+    { character: "Chester", image: "aksesuar/Chester.png" },
+    { character: "Chuck", image: "aksesuar/Chuck.png" },
+    { character: "Clancy", image: "aksesuar/Clancy.png" },
+    { character: "Colette", image: "aksesuar/Colette.png" },
+    { character: "Colt", image: "aksesuar/Colt.png" },
+    { character: "Cordelius", image: "aksesuar/Cordelius.png" },
+    { character: "Crow", image: "aksesuar/Crow.png" },
+    { character: "Darryl", image: "aksesuar/Darryl.png" },
+    { character: "Doug", image: "aksesuar/Doug.png" },
+    { character: "Draco", image: "aksesuar/Draco.png" },
+    { character: "Dynamike", image: "aksesuar/Dynamike.png" },
+    { character: "Edgar", image: "aksesuar/Edgar.png" },
+    { character: "El Primo", image: "aksesuar/El Primo.png" },
+    { character: "Emz", image: "aksesuar/Emz.png" },
+    { character: "Eve", image: "aksesuar/Eve.png" },
+    { character: "Fang", image: "aksesuar/Fang.png" },
+    { character: "Frank", image: "aksesuar/Frank.png" },
+    { character: "Gale", image: "aksesuar/Gale.png" },
+    { character: "Gene", image: "aksesuar/Gene.png" },
+    { character: "Gray", image: "aksesuar/Gray.png" },
+    { character: "Griff", image: "aksesuar/Griff.png" },
+    { character: "Gus", image: "aksesuar/Gus.png" },
+    { character: "Hank", image: "aksesuar/Hank.png" },
+    { character: "Jacky", image: "aksesuar/Jacky.png" },
+    { character: "Buzz Isıkyılı", image: "aksesuar/Buzz Isıkyılı.png" },
+    { character: "Janet", image: "aksesuar/Janet.png" },
+    { character: "Jessie", image: "aksesuar/Jessie.png" },
+    { character: "Juju", image: "aksesuar/Juju.png" },
+    { character: "Kenji", image: "aksesuar/Kenji.png" },
+    { character: "Kit", image: "aksesuar/Kit.png" },
+    { character: "Larry ve Lawrie", image: "aksesuar/Larry ve Lawrie.png" },
+    { character: "Lily", image: "aksesuar/Lily.png" },
+    { character: "Maise", image: "aksesuar/Maise.png" },
+    { character: "Meeple", image: "aksesuar/Meeple.png" },
+    { character: "Melodie", image: "aksesuar/Melodie.png" },
+    { character: "Mico", image: "aksesuar/Mico.png" },
+    { character: "Moe", image: "aksesuar/Moe.png" },
+    { character: "Mortis", image: "aksesuar/Mortis.png" },
+    { character: "Nani", image: "aksesuar/Nani.png" },
+    { character: "Ollie", image: "aksesuar/Ollie.png" },
+    { character: "Otis", image: "aksesuar/Otis.png" },
+    { character: "Pam", image: "aksesuar/Pam.png" },
+    { character: "Pearl", image: "aksesuar/Pearl.png" },
+    { character: "Piper", image: "aksesuar/Piper.png" },
+    { character: "R-T", image: "aksesuar/R-T.png" },
+    { character: "Ruffs", image: "aksesuar/Ruffs.png" },
+    { character: "Sam", image: "aksesuar/Sam.png" },
+    { character: "Shade", image: "aksesuar/Shade.png" },
+    { character: "Spike", image: "aksesuar/Spike.png" },
+    { character: "Squeak", image: "aksesuar/Squeak.png" }
+  ];
+    
+
+    let correctCharacter = "";
+    let remainingAttempts = 10;
+    let guessedCharacters = [];
+
+    // Oyunu başlatan fonksiyon
+    function initGame() {
+      remainingAttempts = 10;
+      guessedCharacters = [];
+      document.getElementById("guessHistory").innerHTML = "";
+      document.getElementById("resultMessage").innerHTML = "";
+      document.getElementById("attemptsRemaining").textContent = "Kalan Tahmin Hakkı: " + remainingAttempts;
+      document.getElementById("guessInput").disabled = false;
+      document.getElementById("guessButton").disabled = false;
+      document.getElementById("endOptions").classList.add("hidden");
+      document.getElementById("guessInput").value = "";
+
+      // Rastgele bir aksesuar seçimi
+      const randomIndex = Math.floor(Math.random() * accessories.length);
+      const selected = accessories[randomIndex];
+      correctCharacter = selected.character.toLowerCase();
+      document.getElementById("accessoryImg").src = selected.image;
+    }
+
+    // Tahmini geçmişe ekleyen fonksiyon
+    function addGuessToHistory(guess, imageUrl) {
+      const historyDiv = document.getElementById("guessHistory");
+      const p = document.createElement("p");
+      p.innerHTML = `<strong>${guess}</strong> <img src="${imageUrl}" alt="${guess}" style="width:30px; vertical-align: middle;">`;
+      historyDiv.appendChild(p);
+    }
+
+    // Tahmin butonu tıklama olayı
+    document.getElementById("guessButton").addEventListener("click", function() {
+      const guessInput = document.getElementById("guessInput");
+      let guess = guessInput.value.trim().toLowerCase();
+      
+      // Boş giriş kontrolü
+      if (guess === "") {
+        alert("Boş giriş yapamazsınız!");
+        return;
+      }
+      // Geçerli karakter kontrolü
+      const validCharacters = accessories.map(item => item.character.toLowerCase());
+      if (!validCharacters.includes(guess)) {
+        alert("Lütfen geçerli bir karakter ismi giriniz!");
+        return;
+      }
+      // Aynı karakterin tekrar girilmesi kontrolü
+      if (guessedCharacters.includes(guess)) {
+        alert("Bu karakteri zaten denediniz!");
+        return;
+      }
+
+      guessedCharacters.push(guess);
+      remainingAttempts--;
+      document.getElementById("attemptsRemaining").textContent = "Kalan Tahmin Hakkı: " + remainingAttempts;
+
+      // Girilen karakterin aksesuar görselini bul ve geçmişe ekle
+      const accessory = accessories.find(item => item.character.toLowerCase() === guess);
+      let imageUrl = accessory ? accessory.image : "";
+      addGuessToHistory(guess, imageUrl);
+
+      // Doğru tahmin kontrolü
+      if (guess === correctCharacter) {
+        document.getElementById("resultMessage").textContent = "Doğru Bildiniz!";
+        endGame(true);
+      } else {
+        // Tahmin hakkı bittiğinde
+        if (remainingAttempts <= 0) {
+          document.getElementById("resultMessage").textContent = "Bilemediniz! Karakter: " + correctCharacter;
+          endGame(false);
+        }
+      }
+      guessInput.value = "";
+    });
+
+    // Oyunu sonlandıran fonksiyon (doğru bilme veya hak bitme durumunda)
+    function endGame(isWin) {
+      document.getElementById("guessInput").disabled = true;
+      document.getElementById("guessButton").disabled = true;
+      document.getElementById("endOptions").classList.remove("hidden");
+    }
+
+    // Tekrar Oyna butonu
+    document.getElementById("restartButton").addEventListener("click", function() {
+      initGame();
+    });
+
+    // Kapat butonu
+    document.getElementById("closeButton").addEventListener("click", function() {
+      // Oyunu kapatma ya da ana menüye yönlendirme işlemi yapılabilir.
+      // Bu örnekte, oyun konteynerini gizliyoruz.
+      document.querySelector(".container").style.display = "none";
+    });
+
+    // Sayfa yüklendiğinde oyunu başlat
+    initGame();
+  </script>
+</body>
+</html>
