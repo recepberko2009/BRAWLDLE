@@ -33,12 +33,14 @@
         }
 
         #guessInput {
-            padding: 10px;
-            font-size: 20px;
-            border: 2px solid gold;
-            border-radius: 20px;
-            outline: none;
-            box-shadow: 0 0 15px gold;
+           padding: 10px;
+    font-size: 20px;
+    border: 2px solid gold;
+    border-radius: 20px;
+    outline: none;
+    box-shadow: 0 0 15px gold;
+    display: block; /* Ortalamak için block yap */
+    margin: 20px auto; /* Ortalamak için auto kullan */
         }
 
         .keyboard button {
@@ -50,10 +52,12 @@
             border: none;
             border-radius: 10px;
             box-shadow: 0 0 15px gold;
+           
         }
 
         .keyboard {
             margin-top: 20px;
+             text-align: center; /* Butonu ortalamak için */
         }
 
         .end-message {
@@ -62,6 +66,20 @@
             font-size: 24px;
             border: 2px solid white;
             margin-top: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 0 20px gold;
+        }
+
+        .end-message button {
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            background: gold;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 0 15px gold;
         }
 
         footer {
@@ -164,6 +182,10 @@
             // End message and restart options hidden
             document.getElementById("endMessage").style.display = "none";
             document.getElementById("restartOptions").style.display = "none";
+            document.getElementById("guessInput").disabled = false; // Input'u tekrar aktif et
+            document.getElementById("guessInput").style.display = "block"; // Input'u göster
+            document.querySelector(".keyboard button").style.display = "block"; // Tahmin Et butonunu göster
+            document.getElementById("guessInput").value = ""; // Input'u sıfırla
         }
 
         startNewGame();
@@ -211,15 +233,20 @@
             }
 
             attemptsLeft--;
+            guessInput.value = ""; // Tahmin yapıldıktan sonra metin kutusunu sıfırla
 
             if (guess === correctCharacter) {
                 document.getElementById("endMessage").textContent = `Tebrikler! Doğru tahmin: ${correctCharacter}`;
                 document.getElementById("endMessage").style.display = "block";
                 document.getElementById("restartOptions").style.display = "block"; // Oyun bitince seçenekleri göster
+                document.getElementById("guessInput").style.display = "none"; // Input'u gizle
+                document.querySelector(".keyboard button").style.display = "none"; // Tahmin Et butonunu gizle
             } else if (attemptsLeft === 0) {
                 document.getElementById("endMessage").textContent = `Bilemediniz! Doğru karakter: ${correctCharacter}`;
                 document.getElementById("endMessage").style.display = "block";
                 document.getElementById("restartOptions").style.display = "block"; // Oyun bitince seçenekleri göster
+                document.getElementById("guessInput").style.display = "none"; // Input'u gizle
+                document.querySelector(".keyboard button").style.display = "none"; // Tahmin Et butonunu gizle
             }
         }
 
