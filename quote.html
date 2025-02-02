@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brawl Stars Unvan Tahmin</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            background-image: url('https://preview.redd.it/iapqmzd3zu721.jpg?width=640&crop=smart&auto=webp&s=f718f1c7b7f2bea6f66267e29b20709c4e23852e');
+            background-size: cover;
+            background-position: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+        .guess {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .feedback {
+            color: #ffcc00;
+            font-size: 1.1em;
+            margin: 10px 0;
+        }
+        .button {
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            background-color: #ff6600;
+            color: #fff;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #cc5200;
+        }
+        .suggestions {
+            max-height: 150px;
+            overflow-y: auto;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .suggestions div {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #ccc;
+        }
+        .suggestions div:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        .footer {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #ffcc00;
+            font-style: italic;
+        }
+        .alert {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+            background-color: rgba(255, 0, 0, 0.7);
+            color: #fff;
+            font-size: 1.1em;
+        }
+        .title {
+            font-size: 1.5em;
+            color: #ffcc00;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Brawl Stars Unvan Tahmin</h1>
+        <p>Karakterin ünvanından tahmin etmek için 8 hakkınız var!</p>
+        <div class="title" id="title"></div>
+        <div id="guesses"></div>
+        <input type="text" id="guessInput" placeholder="Karakter adı yazın">
+        <div class="suggestions" id="suggestions"></div>
+        <button class="button" onclick="makeGuess()">Tahmin Et</button>
+        <div id="feedback"></div>
+        <div id="result"></div>
+        <button class="button" id="playAgain" style="display:none;" onclick="resetGame()">Tekrar Oyna</button>
+        <button class="button" id="closeGame" style="display:none;" onclick="closeGame()">Kapat</button>
+        <div class="footer">Recep Berk Akten tarafından yapıldı</div>
+    </div>
+
+    <script>
+       const characters = [
+            'Grom', 'Leon', 'Lola', 'Lou', 'Mandy', 'Max', 'Meg', 'Mr P', 'Nita', 'Penny', 'Poco', 'Rico', 'Rosa', 'Sandy',
+            'Sprout', 'Stu', 'Surge', 'Tara', 'Tick', 'Willow', 'Shelly', '8-Bit', 'Amber', 'Angelo', 'Ash', 'Barley', 'Bea',
+            'Belle', 'Berry', 'Bibi', 'Bo', 'Bonnie', 'Brock', 'Bull', 'Buster', 'Buzz', 'Byron', 'Carl', 'Charlie', 'Chester',
+            'Chuck', 'Clancy', 'Colette', 'Colt', 'Cordelius', 'Crow', 'Darryl', 'Doug', 'Draco', 'Dynamike', 'Edgar', 'El Primo',
+            'Emz', 'Eve', 'Fang', 'Frank', 'Gale', 'Gene', 'Gray', 'Griff', 'Gus', 'Hank', 'Jacky', 'Buzz Isıkyılı', 'Janet', 
+            'Jessie', 'Juju', 'Kenji', 'Kit', 'Larry ve Lawrie', 'Lily', 'Maise', 'Meeple', 'Melodie', 'Mico', 'Moe', 'Mortis',
+            'Nani', 'Ollie', 'Otis', 'Pam', 'Pearl', 'Piper', 'R-T', 'Ruffs', 'Sam', 'Shade', 'Spike', 'Squeak'
+        ];
+        const titles = {
+            "Shelly": "Açıklamaya zaman yok",
+            "Grom": "Tek el yeter!",
+            "Leon": "Sinsi",
+            "Lola": "Drama Kraliçesi",
+            "Lou": "Hep yanında!",
+            "Mandy": "Çetin ceviz",
+            "Max": "hız budur",
+            "Meg": " Teknik Destek 2.0",
+            "Mr P": "Patron",
+            "Nita": "Yabani",
+            "Penny": " Huysuz",
+            "Poco": " El Mariachi",
+            "Rico": "Mükemmel Sevgili",
+            "Rosa": "Gezenti",
+            "Sandy": "Uykucu",
+            "Sprout": "Çevreci",
+            "Stu": "Korkunç",
+            "Surge": "Kanka",
+            "Tara": "Kartlarda ne var?",
+            "Tick": " Kafam nerede?",
+            "Willow": "Zihin kontrolü",
+            "8-Bit": "SYS 64738",
+            "Amber": "Kundakçı",
+            "Angelo": "Kana Susamış",
+            "Ash": "Ayaklı çöp tenekesi",
+            "Barley": "Al bakalım",
+            "Bea": "Kraliçe",
+            "Belle": "Starr",
+            "Berry": "Tek Boynuzlu At",
+            "Bibi": "Ortamın havalısı",
+            "Bo": "Doğa tutkunu",
+            "Bonnie": "Pervasız",
+            "Brock": "Bom",
+            "Bull": "Buldozer",
+            "Buster": "Büyük Şov",
+            "Buzz": "Doğuştan kötü",
+            "Byron": "Sansasyonel",
+            "Carl": "Jeolog",
+            "Charlie": "İnanılmaz",
+            "Chester": "Her işte Usta",
+            "Chuck": "Orkestra Şefi",
+            "Clancy": "Kabuğuna çekilmiş",
+            "Colette": "Koleksiyoncu",
+            "Colt": "Güzeller güzeli",
+            "Cordelius": "Toksik",
+            "Crow": "Gak,gak",
+            "Darryl": "Dikkat korsan",
+            "Doug": "Sosis Ustası",
+            "Draco": "Zindan Ustası",
+            "Dynamike": "Cici Kuş",
+            "Edgar": "Brawl Stars CEO'su",
+            "El Primo": "Güreşçi",
+            "Emz": "#ağlayın",
+            "Eve": "ana yüreği",
+            "Fang": "Ayakkabı Sanatçısı",
+            "Frank": "Tank",
+            "Gale": "Görevli",
+            "Gene": "Elime konuş",
+            "Gray": "Pandomimci",
+            "Griff": "Açgözlü",
+            "Gus": "Kayıp",
+            "Hank": "Kararlı Karides",
+            "Jacky": "#@%**",
+            "Buzz Isıkyılı": "Sonsuzluk ve ötesine",
+            "Janet": "Roket",
+            "Jessie": "inŞaatçı",
+            "Juju": "Lanetli",
+            "Kenji": "Samuray",
+            "Kit": "miyav",
+            "Larry ve Lawrie": "Burada kanun Benim",
+            "Lily": "Kalleş",
+            "Maise": "Felaket ustası",
+            "Meeple": "Hilebaz",
+            "Melodie": "Korkusuz",
+            "Mico": "Şaka mıyım Sence",
+            "Moe": "peynir Tutkunu",
+            "Mortis": "Gece Yaratığı",
+            "Nani": "Ninni",
+            "Ollie": "Kaykay Ustası",
+            "Otis": "Sanatçı",
+            "Pam": "annen",
+            "Pearl": "pişiririm",
+            "Piper": "Keskin Nişancı",
+            "R-T": "Gözcü",
+            "Ruffs": "Albay",
+            "Sam": "Kapak Olsun",
+            "Shade": "Hayalet",
+            "Spike": "Türünün Tek örneği",
+            "Squeak": "Laboratuvar kazası"
+        };
+        
+        let targetCharacter = characters[Math.floor(Math.random() * characters.length)];
+        let guesses = [];
+        let attempts = 8;
+
+        function startGame() {
+            document.getElementById('title').textContent = `Ünvan: ${titles[targetCharacter]}`;
+        }
+
+        function makeGuess() {
+            const guessInput = document.getElementById('guessInput');
+            const guess = guessInput.value.trim();
+            const feedback = document.getElementById('feedback');
+            const result = document.getElementById('result');
+            const guessesDiv = document.getElementById('guesses');
+
+            if (!guess) {
+                showAlert("Lütfen bir karakter adı yazın.");
+                return;
+            }
+
+            if (guesses.includes(guess)) {
+                showAlert("Bu karakteri zaten tahmin ettiniz.");
+                return;
+            }
+
+            if (!characters.includes(guess)) {
+                showAlert("Böyle bir karakter yok.");
+                return;
+            }
+
+            guesses.push(guess);
+            attempts--;
+
+            const guessDiv = document.createElement('div');
+            guessDiv.className = 'guess';
+            guessDiv.textContent = `${guess}: ${titles[guess]}`;
+            guessesDiv.appendChild(guessDiv);
+
+            if (guess === targetCharacter) {
+                result.innerHTML = `<div class="alert">Tebrikler! Karakteri doğru bildiniz: ${targetCharacter} - ${titles[targetCharacter]}</div>`;
+                endGame();
+            } else if (attempts === 0) {
+                result.innerHTML = `<div class="alert">Maalesef, bilemediniz. Doğru karakter: ${targetCharacter} - ${titles[targetCharacter]}</div>`;
+                endGame();
+            } else {
+                feedback.textContent = `Kalan tahmin hakkı: ${attempts}`;
+            }
+
+            guessInput.value = '';
+            updateSuggestions('');
+        }
+
+        function showAlert(message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert';
+            alertDiv.textContent = message;
+            document.getElementById('feedback').appendChild(alertDiv);
+            setTimeout(() => alertDiv.remove(), 3000);
+        }
+
+        function endGame() {
+            document.getElementById('guessInput').disabled = true;
+            document.getElementById('playAgain').style.display = 'inline';
+            document.getElementById('closeGame').style.display = 'inline';
+            document.getElementById('guessInput').style.display = 'none';
+            document.getElementById('suggestions').style.display = 'none';
+            document.querySelector('button[onclick="makeGuess()"]').style.display = 'none';
+        }
+
+        function resetGame() {
+            targetCharacter = characters[Math.floor(Math.random() * characters.length)];
+            guesses = [];
+            attempts = 8;
+            document.getElementById('guesses').innerHTML = '';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('result').textContent = '';
+            document.getElementById('guessInput').disabled = false;
+            document.getElementById('guessInput').style.display = 'inline';
+            document.getElementById('suggestions').style.display = 'block';
+            document.querySelector('button[onclick="makeGuess()"]').style.display = 'inline';
+            document.getElementById('playAgain').style.display = 'none';
+            document.getElementById('closeGame').style.display = 'none';
+            startGame();
+        }
+
+        function closeGame() {
+            window.close();
+        }
+
+        function updateSuggestions(input) {
+            const suggestionsDiv = document.getElementById('suggestions');
+            suggestionsDiv.innerHTML = '';
+            const filteredCharacters = characters.filter(char => char.toLowerCase().includes(input.toLowerCase()));
+            filteredCharacters.forEach(char => {
+                const suggestion = document.createElement('div');
+                suggestion.textContent = char;
+                suggestion.onclick = () => {
+                    document.getElementById('guessInput').value = char;
+                    suggestionsDiv.innerHTML = '';
+                };
+                suggestionsDiv.appendChild(suggestion);
+            });
+        }
+
+        document.getElementById('guessInput').addEventListener('input', (e) => {
+            updateSuggestions(e.target.value);
+        });
+
+        startGame();
+    </script>
+</body>
+</html>
