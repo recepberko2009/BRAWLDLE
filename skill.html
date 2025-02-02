@@ -33,14 +33,41 @@
       margin-bottom: 20px;
       border-radius: 10px;
     }
-    /* Giriş Kutusu ve Datalist */
-    input[type="text"] {
-      padding: 10px;
+    /* Giriş Kutusu */
+    .autocomplete-container {
+      position: relative;
+      display: inline-block;
       width: 80%;
+      margin-bottom: 10px;
+    }
+    #guessInput {
+      padding: 10px;
+      width: 100%;
       font-size: 1em;
       border: 1px solid #ccc;
       border-radius: 10px;
-      margin-bottom: 10px;
+    }
+    /* Öneriler Kutusu */
+    .suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      border: 1px solid #ccc;
+      border-top: none;
+      background: #fff;
+      z-index: 10;
+      max-height: 150px;
+      overflow-y: auto;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+    .suggestion-item {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .suggestion-item:hover {
+      background-color: #f0f0f0;
     }
     /* Butonlar */
     button {
@@ -109,101 +136,11 @@
     <div id="hintText"><em>Bu aksesuar hangi karaktere ait?</em></div>
     <br>
     
-    <!-- Tahmin Giriş Alanı -->
-    <input type="text" id="guessInput" list="characterList" placeholder="Karakter adını girin">
-   <datalist id="characterList">
-  <option value="Grom">
-  <option value="Leon">
-  <option value="Lola">
-  <option value="Lou">
-  <option value="Mandy">
-  <option value="Max">
-  <option value="Meg">
-  <option value="Mr P">
-  <option value="Nita">
-  <option value="Penny">
-  <option value="Poco">
-  <option value="Rico">
-  <option value="Rosa">
-  <option value="Sandy">
-  <option value="Sprout">
-  <option value="Stu">
-  <option value="Surge">
-  <option value="Tara">
-  <option value="Tick">
-  <option value="Willow">
-  <option value="Shelly">
-  <option value="8-Bit">
-  <option value="Amber">
-  <option value="Angelo">
-  <option value="Ash">
-  <option value="Barley">
-  <option value="Bea">
-  <option value="Belle">
-  <option value="Berry">
-  <option value="Bibi">
-  <option value="Bo">
-  <option value="Bonnie">
-  <option value="Brock">
-  <option value="Bull">
-  <option value="Buster">
-  <option value="Buzz">
-  <option value="Byron">
-  <option value="Carl">
-  <option value="Charlie">
-  <option value="Chester">
-  <option value="Chuck">
-  <option value="Clancy">
-  <option value="Colette">
-  <option value="Colt">
-  <option value="Cordelius">
-  <option value="Crow">
-  <option value="Darryl">
-  <option value="Doug">
-  <option value="Draco">
-  <option value="Dynamike">
-  <option value="Edgar">
-  <option value="El Primo">
-  <option value="Emz">
-  <option value="Eve">
-  <option value="Fang">
-  <option value="Frank">
-  <option value="Gale">
-  <option value="Gene">
-  <option value="Gray">
-  <option value="Griff">
-  <option value="Gus">
-  <option value="Hank">
-  <option value="Jacky">
-  <option value="Buzz Isıkyılı">
-  <option value="Janet">
-  <option value="Jessie">
-  <option value="Juju">
-  <option value="Kenji">
-  <option value="Kit">
-  <option value="Larry ve Lawrie">
-  <option value="Lily">
-  <option value="Maise">
-  <option value="Meeple">
-  <option value="Melodie">
-  <option value="Mico">
-  <option value="Moe">
-  <option value="Mortis">
-  <option value="Nani">
-  <option value="Ollie">
-  <option value="Otis">
-  <option value="Pam">
-  <option value="Pearl">
-  <option value="Piper">
-  <option value="R-T">
-  <option value="Ruffs">
-  <option value="Sam">
-  <option value="Shade">
-  <option value="Spike">
-  <option value="Squeak">
-</datalist>
-
-    <br>
+    <!-- Tahmin Giriş Alanı (Autocomplete ile) -->
+    <div class="autocomplete-container">
+      <input type="text" id="guessInput" placeholder="Karakter adını girin">
+      <div id="suggestions" class="suggestions"></div>
+    </div>
     
     <!-- Tahmin Et Butonu -->
     <button id="guessButton">Tahmin Et</button>
@@ -230,98 +167,97 @@
   <script>
     // Brawl Stars karakterleri ve aksesuar görselleri (örnek resimler kullanılmıştır)
     const accessories = [
-    { character: "Grom", image: "aksesuar/Grom.png" },
-    { character: "Leon", image: "aksesuar/Leon.png" },
-    { character: "Lola", image: "aksesuar/Lola.png" },
-    { character: "Lou", image: "aksesuar/Lou.png" },
-    { character: "Mandy", image: "aksesuar/Mandy.png" },
-    { character: "Max", image: "aksesuar/Max.png" },
-    { character: "Meg", image: "aksesuar/Meg.png" },
-    { character: "Mr P", image: "aksesuar/Mr P.png" },
-    { character: "Nita", image: "aksesuar/Nita.png" },
-    { character: "Penny", image: "aksesuar/Penny.png" },
-    { character: "Poco", image: "aksesuar/Poco.png" },
-    { character: "Rico", image: "aksesuar/Rico.png" },
-    { character: "Rosa", image: "aksesuar/Rosa.png" },
-    { character: "Sandy", image: "aksesuar/Sandy.png" },
-    { character: "Sprout", image: "aksesuar/Sprout.png" },
-    { character: "Stu", image: "aksesuar/Stu.png" },
-    { character: "Surge", image: "aksesuar/Surge.png" },
-    { character: "Tara", image: "aksesuar/Tara.png" },
-    { character: "Tick", image: "aksesuar/Tick.png" },
-    { character: "Willow", image: "aksesuar/Willow.png" },
-    { character: "Shelly", image: "aksesuar/Shelly.png" },
-    { character: "8-Bit", image: "aksesuar/8-Bit.png" },
-    { character: "Amber", image: "aksesuar/Amber.png" },
-    { character: "Angelo", image: "aksesuar/Angelo.png" },
-    { character: "Ash", image: "aksesuar/Ash.png" },
-    { character: "Barley", image: "aksesuar/Barley.png" },
-    { character: "Bea", image: "aksesuar/Bea.png" },
-    { character: "Belle", image: "aksesuar/Belle.png" },
-    { character: "Berry", image: "aksesuar/Berry.png" },
-    { character: "Bibi", image: "aksesuar/Bibi.png" },
-    { character: "Bo", image: "aksesuar/Bo.png" },
-    { character: "Bonnie", image: "aksesuar/Bonnie.png" },
-    { character: "Brock", image: "aksesuar/Brock.png" },
-    { character: "Bull", image: "aksesuar/Bull.png" },
-    { character: "Buster", image: "aksesuar/Buster.png" },
-    { character: "Buzz", image: "aksesuar/Buzz.png" },
-    { character: "Byron", image: "aksesuar/Byron.png" },
-    { character: "Carl", image: "aksesuar/Carl.png" },
-    { character: "Charlie", image: "aksesuar/Charlie.png" },
-    { character: "Chester", image: "aksesuar/Chester.png" },
-    { character: "Chuck", image: "aksesuar/Chuck.png" },
-    { character: "Clancy", image: "aksesuar/Clancy.png" },
-    { character: "Colette", image: "aksesuar/Colette.png" },
-    { character: "Colt", image: "aksesuar/Colt.png" },
-    { character: "Cordelius", image: "aksesuar/Cordelius.png" },
-    { character: "Crow", image: "aksesuar/Crow.png" },
-    { character: "Darryl", image: "aksesuar/Darryl.png" },
-    { character: "Doug", image: "aksesuar/Doug.png" },
-    { character: "Draco", image: "aksesuar/Draco.png" },
-    { character: "Dynamike", image: "aksesuar/Dynamike.png" },
-    { character: "Edgar", image: "aksesuar/Edgar.png" },
-    { character: "El Primo", image: "aksesuar/El Primo.png" },
-    { character: "Emz", image: "aksesuar/Emz.png" },
-    { character: "Eve", image: "aksesuar/Eve.png" },
-    { character: "Fang", image: "aksesuar/Fang.png" },
-    { character: "Frank", image: "aksesuar/Frank.png" },
-    { character: "Gale", image: "aksesuar/Gale.png" },
-    { character: "Gene", image: "aksesuar/Gene.png" },
-    { character: "Gray", image: "aksesuar/Gray.png" },
-    { character: "Griff", image: "aksesuar/Griff.png" },
-    { character: "Gus", image: "aksesuar/Gus.png" },
-    { character: "Hank", image: "aksesuar/Hank.png" },
-    { character: "Jacky", image: "aksesuar/Jacky.png" },
-    { character: "Buzz Isıkyılı", image: "aksesuar/Buzz Isıkyılı.png" },
-    { character: "Janet", image: "aksesuar/Janet.png" },
-    { character: "Jessie", image: "aksesuar/Jessie.png" },
-    { character: "Juju", image: "aksesuar/Juju.png" },
-    { character: "Kenji", image: "aksesuar/Kenji.png" },
-    { character: "Kit", image: "aksesuar/Kit.png" },
-    { character: "Larry ve Lawrie", image: "aksesuar/Larry ve Lawrie.png" },
-    { character: "Lily", image: "aksesuar/Lily.png" },
-    { character: "Maise", image: "aksesuar/Maise.png" },
-    { character: "Meeple", image: "aksesuar/Meeple.png" },
-    { character: "Melodie", image: "aksesuar/Melodie.png" },
-    { character: "Mico", image: "aksesuar/Mico.png" },
-    { character: "Moe", image: "aksesuar/Moe.png" },
-    { character: "Mortis", image: "aksesuar/Mortis.png" },
-    { character: "Nani", image: "aksesuar/Nani.png" },
-    { character: "Ollie", image: "aksesuar/Ollie.png" },
-    { character: "Otis", image: "aksesuar/Otis.png" },
-    { character: "Pam", image: "aksesuar/Pam.png" },
-    { character: "Pearl", image: "aksesuar/Pearl.png" },
-    { character: "Piper", image: "aksesuar/Piper.png" },
-    { character: "R-T", image: "aksesuar/R-T.png" },
-    { character: "Ruffs", image: "aksesuar/Ruffs.png" },
-    { character: "Sam", image: "aksesuar/Sam.png" },
-    { character: "Shade", image: "aksesuar/Shade.png" },
-    { character: "Spike", image: "aksesuar/Spike.png" },
-    { character: "Squeak", image: "aksesuar/Squeak.png" }
-  ];
+      { character: "Grom", image: "aksesuar/Grom.png" },
+      { character: "Leon", image: "aksesuar/Leon.png" },
+      { character: "Lola", image: "aksesuar/Lola.png" },
+      { character: "Lou", image: "aksesuar/Lou.png" },
+      { character: "Mandy", image: "aksesuar/Mandy.png" },
+      { character: "Max", image: "aksesuar/Max.png" },
+      { character: "Meg", image: "aksesuar/Meg.png" },
+      { character: "Mr P", image: "aksesuar/Mr P.png" },
+      { character: "Nita", image: "aksesuar/Nita.png" },
+      { character: "Penny", image: "aksesuar/Penny.png" },
+      { character: "Poco", image: "aksesuar/Poco.png" },
+      { character: "Rico", image: "aksesuar/Rico.png" },
+      { character: "Rosa", image: "aksesuar/Rosa.png" },
+      { character: "Sandy", image: "aksesuar/Sandy.png" },
+      { character: "Sprout", image: "aksesuar/Sprout.png" },
+      { character: "Stu", image: "aksesuar/Stu.png" },
+      { character: "Surge", image: "aksesuar/Surge.png" },
+      { character: "Tara", image: "aksesuar/Tara.png" },
+      { character: "Tick", image: "aksesuar/Tick.png" },
+      { character: "Willow", image: "aksesuar/Willow.png" },
+      { character: "Shelly", image: "aksesuar/Shelly.png" },
+      { character: "8-Bit", image: "aksesuar/8-Bit.png" },
+      { character: "Amber", image: "aksesuar/Amber.png" },
+      { character: "Angelo", image: "aksesuar/Angelo.png" },
+      { character: "Ash", image: "aksesuar/Ash.png" },
+      { character: "Barley", image: "aksesuar/Barley.png" },
+      { character: "Bea", image: "aksesuar/Bea.png" },
+      { character: "Belle", image: "aksesuar/Belle.png" },
+      { character: "Berry", image: "aksesuar/Berry.png" },
+      { character: "Bibi", image: "aksesuar/Bibi.png" },
+      { character: "Bo", image: "aksesuar/Bo.png" },
+      { character: "Bonnie", image: "aksesuar/Bonnie.png" },
+      { character: "Brock", image: "aksesuar/Brock.png" },
+      { character: "Bull", image: "aksesuar/Bull.png" },
+      { character: "Buster", image: "aksesuar/Buster.png" },
+      { character: "Buzz", image: "aksesuar/Buzz.png" },
+      { character: "Byron", image: "aksesuar/Byron.png" },
+      { character: "Carl", image: "aksesuar/Carl.png" },
+      { character: "Charlie", image: "aksesuar/Charlie.png" },
+      { character: "Chester", image: "aksesuar/Chester.png" },
+      { character: "Chuck", image: "aksesuar/Chuck.png" },
+      { character: "Clancy", image: "aksesuar/Clancy.png" },
+      { character: "Colette", image: "aksesuar/Colette.png" },
+      { character: "Colt", image: "aksesuar/Colt.png" },
+      { character: "Cordelius", image: "aksesuar/Cordelius.png" },
+      { character: "Crow", image: "aksesuar/Crow.png" },
+      { character: "Darryl", image: "aksesuar/Darryl.png" },
+      { character: "Doug", image: "aksesuar/Doug.png" },
+      { character: "Draco", image: "aksesuar/Draco.png" },
+      { character: "Dynamike", image: "aksesuar/Dynamike.png" },
+      { character: "Edgar", image: "aksesuar/Edgar.png" },
+      { character: "El Primo", image: "aksesuar/El Primo.png" },
+      { character: "Emz", image: "aksesuar/Emz.png" },
+      { character: "Eve", image: "aksesuar/Eve.png" },
+      { character: "Fang", image: "aksesuar/Fang.png" },
+      { character: "Frank", image: "aksesuar/Frank.png" },
+      { character: "Gale", image: "aksesuar/Gale.png" },
+      { character: "Gene", image: "aksesuar/Gene.png" },
+      { character: "Gray", image: "aksesuar/Gray.png" },
+      { character: "Griff", image: "aksesuar/Griff.png" },
+      { character: "Gus", image: "aksesuar/Gus.png" },
+      { character: "Hank", image: "aksesuar/Hank.png" },
+      { character: "Jacky", image: "aksesuar/Jacky.png" },
+      { character: "Buzz Isıkyılı", image: "aksesuar/Buzz Isıkyılı.png" },
+      { character: "Janet", image: "aksesuar/Janet.png" },
+      { character: "Jessie", image: "aksesuar/Jessie.png" },
+      { character: "Juju", image: "aksesuar/Juju.png" },
+      { character: "Kenji", image: "aksesuar/Kenji.png" },
+      { character: "Kit", image: "aksesuar/Kit.png" },
+      { character: "Larry ve Lawrie", image: "aksesuar/Larry ve Lawrie.png" },
+      { character: "Lily", image: "aksesuar/Lily.png" },
+      { character: "Maise", image: "aksesuar/Maise.png" },
+      { character: "Meeple", image: "aksesuar/Meeple.png" },
+      { character: "Melodie", image: "aksesuar/Melodie.png" },
+      { character: "Mico", image: "aksesuar/Mico.png" },
+      { character: "Moe", image: "aksesuar/Moe.png" },
+      { character: "Mortis", image: "aksesuar/Mortis.png" },
+      { character: "Nani", image: "aksesuar/Nani.png" },
+      { character: "Ollie", image: "aksesuar/Ollie.png" },
+      { character: "Otis", image: "aksesuar/Otis.png" },
+      { character: "Pam", image: "aksesuar/Pam.png" },
+      { character: "Pearl", image: "aksesuar/Pearl.png" },
+      { character: "Piper", image: "aksesuar/Piper.png" },
+      { character: "R-T", image: "aksesuar/R-T.png" },
+      { character: "Ruffs", image: "aksesuar/Ruffs.png" },
+      { character: "Sam", image: "aksesuar/Sam.png" },
+      { character: "Shade", image: "aksesuar/Shade.png" },
+      { character: "Spike", image: "aksesuar/Spike.png" },
+      { character: "Squeak", image: "aksesuar/Squeak.png" }
+    ];
     
-
     let correctCharacter = "";
     let remainingAttempts = 10;
     let guessedCharacters = [];
@@ -396,6 +332,8 @@
         }
       }
       guessInput.value = "";
+      // Öneriler kutusunu temizle
+      document.getElementById("suggestions").innerHTML = "";
     });
 
     // Oyunu sonlandıran fonksiyon (doğru bilme veya hak bitme durumunda)
@@ -412,9 +350,60 @@
 
     // Kapat butonu
     document.getElementById("closeButton").addEventListener("click", function() {
-      // Oyunu kapatma ya da ana menüye yönlendirme işlemi yapılabilir.
       // Bu örnekte, oyun konteynerini gizliyoruz.
       document.querySelector(".container").style.display = "none";
+    });
+
+    // Dinamik Öneri Kutusu İşlevselliği
+    const validCharacters = [
+      'Grom', 'Leon', 'Lola', 'Lou', 'Mandy', 'Max', 'Meg', 'Mr P', 'Nita', 'Penny', 'Poco', 'Rico', 'Rosa', 'Sandy',
+      'Sprout', 'Stu', 'Surge', 'Tara', 'Tick', 'Willow', 'Shelly', '8-Bit', 'Amber', 'Angelo', 'Ash', 'Barley', 'Bea',
+      'Belle', 'Berry', 'Bibi', 'Bo', 'Bonnie', 'Brock', 'Bull', 'Buster', 'Buzz', 'Byron', 'Carl', 'Charlie', 'Chester',
+      'Chuck', 'Clancy', 'Colette', 'Colt', 'Cordelius', 'Crow', 'Darryl', 'Doug', 'Draco', 'Dynamike', 'Edgar', 'El Primo',
+      'Emz', 'Eve', 'Fang', 'Frank', 'Gale', 'Gene', 'Gray', 'Griff', 'Gus', 'Hank', 'Jacky', 'Buzz Isıkyılı', 'Janet', 
+      'Jessie', 'Juju', 'Kenji', 'Kit', 'Larry ve Lawrie', 'Lily', 'Maise', 'Meeple', 'Melodie', 'Mico', 'Moe', 'Mortis',
+      'Nani', 'Ollie', 'Otis', 'Pam', 'Pearl', 'Piper', 'R-T', 'Ruffs', 'Sam', 'Shade', 'Spike', 'Squeak'
+    ];
+
+    const guessInputField = document.getElementById('guessInput');
+    const suggestionsContainer = document.getElementById('suggestions');
+
+    // Öneri oluşturma fonksiyonu
+    guessInputField.addEventListener('input', function() {
+      const inputValue = this.value.toLowerCase();
+      // Mevcut önerileri temizle
+      suggestionsContainer.innerHTML = '';
+
+      if (inputValue.length === 0) {
+        return; // boş ise öneri gösterme
+      }
+
+      // Karakter listesinden filtreleme yap
+      const filtered = validCharacters.filter(character => 
+        character.toLowerCase().startsWith(inputValue)
+      );
+
+      // Filtrelenen karakterleri öneriler kutusuna ekle
+      filtered.forEach(function(suggestion) {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.classList.add('suggestion-item');
+        suggestionItem.textContent = suggestion;
+
+        // Öneriye tıklandığında input alanına aktar
+        suggestionItem.addEventListener('click', function() {
+          guessInputField.value = suggestion;
+          suggestionsContainer.innerHTML = ''; // önerileri temizle
+        });
+
+        suggestionsContainer.appendChild(suggestionItem);
+      });
+    });
+
+    // Input dışına tıklanınca öneri kutusunu kapatma
+    document.addEventListener('click', function(e) {
+      if (!document.querySelector('.autocomplete-container').contains(e.target)) {
+        suggestionsContainer.innerHTML = '';
+      }
     });
 
     // Sayfa yüklendiğinde oyunu başlat
